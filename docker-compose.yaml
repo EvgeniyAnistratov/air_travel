@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:18.1-alpine
+    restart: on-failure
+    container_name: air_travel_postgres_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./.data/postgres_data:/var/lib/postgresql
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_PORT: ${APP_PORT}
+    image: air_travel_app
+    container_name: air_travel_app
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - postgres
